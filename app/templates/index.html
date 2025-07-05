@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Решу ДЗ - Помощь с домашними заданиями</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            50: '#f0f9ff',
+                            100: '#e0f2fe',
+                            200: '#bae6fd',
+                            300: '#7dd3fc',
+                            400: '#38bdf8',
+                            500: '#0ea5e9',
+                            600: '#0284c7',
+                            700: '#0369a1',
+                            800: '#075985',
+                            900: '#0c4a6e',
+                        },
+                        secondary: {
+                            50: '#f5f3ff',
+                            100: '#ede9fe',
+                            200: '#ddd6fe',
+                            300: '#c4b5fd',
+                            400: '#a78bfa',
+                            500: '#8b5cf6',
+                            600: '#7c3aed',
+                            700: '#6d28d9',
+                            800: '#5b21b6',
+                            900: '#4c1d95',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                }
+            }
+        }
+    </script>
+    <style>
+        .file-input-label:hover .file-input-button {
+            background-color: #0c4a6e;
+        }
+        .tab-active {
+            border-bottom-width: 3px;
+            border-color: #0ea5e9;
+            color: #0ea5e9;
+            font-weight: 600;
+        }
+        .solution-block {
+            background-color: #f8f9fa;
+            border-left: 4px solid #0d6efd;
+            padding: 1rem;
+            margin: 1rem 0;
+            border-radius: 0.25rem;
+        }
+        .preserve-newlines {
+            white-space: pre-line;
+        }
+        .user-input {
+            background-color: #f0f9ff;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            margin-bottom: 1rem;
+        }
+    </style>
+</head>
+<body class="font-sans bg-gray-50 min-h-screen flex flex-col">
+    <!-- Header -->
+    <header class="bg-white shadow-sm">
+        <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+            <div class="flex items-center space-x-2">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-primary-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                </svg>
+                <h1 class="text-2xl font-bold text-gray-800">Решу ДЗ</h1>
+            </div>
+            <nav class="hidden md:flex space-x-8">
+                <a href="#" class="text-gray-600 hover:text-primary-600 font-medium">Главная</a>
+                <a href="#" class="text-gray-600 hover:text-primary-600 font-medium">Как это работает?</a>
+                <a href="#" class="text-gray-600 hover:text-primary-600 font-medium">О нас</a>
+            </nav>
+            <button class="md:hidden text-gray-600">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                </svg>
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="flex-grow container mx-auto px-4 py-8">
+        <div class="max-w-4xl mx-auto">
+            <div class="text-center mb-10">
+                <h2 class="text-3xl md:text-4xl font-bold text-gray-800 mb-4">Помощь с домашними заданиями</h2>
+                <p class="text-lg text-gray-600 max-w-2xl mx-auto">Загрузите фото задания или введите текст задачи и получите решение или подсказку от нашей нейросети</p>
+            </div>
+
+            <!-- Tabs -->
+            <div class="flex border-b border-gray-200 mb-8">
+                <button data-tab="photo" class="py-3 px-6 font-medium text-gray-500 hover:text-primary-600 tab-active">По фото</button>
+                <button data-tab="text" class="py-3 px-6 font-medium text-gray-500 hover:text-primary-600">По тексту</button>
+            </div>
+
+            <!-- Photo Tab Content -->
+            <div id="photo-content" class="bg-white rounded-xl shadow-md overflow-hidden p-6 mb-8">
+                <div class="mb-6">
+                    <label class="block text-gray-700 font-medium mb-2">Что вам нужно?</label>
+                    <div class="flex flex-wrap gap-4">
+                        <label class="inline-flex items-center">
+                            <input type="radio" name="photo-action" value="help" class="form-radio h-5 w-5 text-primary-600" checked>
+                            <span class="ml-2 text-gray-700">Подсказка</span>
+                        </label>
+                        <label class="inline-flex items-center">
+                            <input type="radio" name="photo-action" value="answer" class="form-radio h-5 w-5 text-primary-600">
+                            <span class="ml-2 text-gray-700">Готовое решение</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center file-input-label">
+                    <input type="file" id="photo-upload" class="hidden" accept="image/*">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    </svg>
+                    <h3 class="mt-2 text-lg font-medium text-gray-900">Перетащите сюда фото задания</h3>
+                    <p class="mt-1 text-sm text-gray-500">Или нажмите, чтобы выбрать файл</p>
+                    <button id="photo-upload-button" class="file-input-button mt-4 bg-primary-600 text-white px-4 py-2 rounded-md hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500">
+                        Выбрать файл
+                    </button>
+                </div>
+
+                <div id="photo-preview" class="mt-4 hidden">
+                    <img id="preview-image" src="#" alt="Preview" class="max-h-64 mx-auto rounded-lg">
+                    <button id="remove-photo" class="mt-2 text-sm text-red-600 hover:text-red-800">Удалить фото</button>
+                </div>
+
+                <button id="photo-submit" class="mt-6 w-full bg-primary-600 text-white py-3 px-4 rounded-md hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 font-medium disabled:opacity-50 disabled:cursor-not-allowed" disabled>
+                    Получить решение
+                </button>
+            </div>
+
+            <!-- Text Tab Content -->
+            <div id="text-content" class="bg-white rounded-xl shadow-md overflow-hidden p-6 mb-8 hidden">
+                <div class="mb-6">
+                    <label class="block text-gray-700 font-medium mb-2">Что вам нужно?</label>
+                    <div class="flex flex-wrap gap-4">
+                        <label class="inline-flex items-center">
+                            <input type="radio" name="text-action" value="help" class="form-radio h-5 w-5 text-primary-600" checked>
+                            <span class="ml-2 text-gray-700">Подсказка</span>
+                        </label>
+                        <label class="inline-flex items-center">
+                            <input type="radio" name="text-action" value="answer" class="form-radio h-5 w-5 text-primary-600">
+                            <span class="ml-2 text-gray-700">Готовое решение</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="mb-4">
+                    <label for="problem-text" class="block text-gray-700 font-medium mb-2">Введите текст задачи</label>
+                    <textarea id="problem-text" rows="5" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500" placeholder="Например: Решите уравнение x² - 5x + 6 = 0"></textarea>
+                </div>
+
+                <button id="text-submit" class="w-full bg-primary-600 text-white py-3 px-4 rounded-md hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 font-medium disabled:opacity-50 disabled:cursor-not-allowed" disabled>
+                    Получить решение
+                </button>
+            </div>
+
+            <!-- Result Section -->
+            <div id="result-section" class="bg-white rounded-xl shadow-md overflow-hidden p-6 hidden">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-lg font-medium text-gray-900">Результат</h3>
+                    <button id="copy-result" class="text-primary-600 hover:text-primary-800 flex items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" />
+                        </svg>
+                        Копировать
+                    </button>
+                </div>
+                
+                <div id="user-input-area" class="user-input mb-4">
+                    <h4 class="font-medium text-gray-700 mb-2">Ваш запрос:</h4>
+                    <div id="user-input-content"></div>
+                </div>
+                
+                <div id="result-area" class="solution-block preserve-newlines p-4 rounded-md min-h-32">
+                    <p class="text-gray-500 italic">Здесь появится результат...</p>
+                </div>
+                <button id="new-request" class="mt-6 w-full bg-secondary-600 text-white py-3 px-4 rounded-md hover:bg-secondary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-secondary-500 font-medium">
+                    Новый запрос
+                </button>
+            </div>
+
+            <!-- Loading State -->
+            <div id="loading-state" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                <div class="bg-white rounded-lg p-8 max-w-sm w-full text-center">
+                    <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary-600 mx-auto mb-4"></div>
+                    <h3 class="text-lg font-medium text-gray-900 mb-2">Обработка запроса</h3>
+                    <p class="text-gray-600">Пожалуйста, подождите...</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white py-8">
+        <div class="container mx-auto px-4">
+            <div class="flex flex-col md:flex-row justify-between items-center">
+                <div class="mb-6 md:mb-0">
+                    <div class="flex items-center space-x-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-primary-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                        </svg>
+                        <span class="text-xl font-bold">Решу ДЗ</span>
+                    </div>
+                    <p class="mt-2 text-gray-400">Помощь с домашними заданиями</p>
+                </div>
+                <div class="grid grid-cols-2 gap-8 md:grid-cols-3">
+                    <div>
+                        <h3 class="text-sm font-semibold uppercase tracking-wider">Навигация</h3>
+                        <ul class="mt-4 space-y-2">
+                            <li><a href="#" class="text-gray-400 hover:text-white">Главная</a></li>
+                            <li><a href="#" class="text-gray-400 hover:text-white">Как это работает?</a></li>
+                            <li><a href="#" class="text-gray-400 hover:text-white">О нас</a></li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h3 class="text-sm font-semibold uppercase tracking-wider">Помощь</h3>
+                        <ul class="mt-4 space-y-2">
+                            <li><a href="#" class="text-gray-400 hover:text-white">FAQ</a></li>
+                            <li><a href="#" class="text-gray-400 hover:text-white">Контакты</a></li>
+                            <li><a href="#" class="text-gray-400 hover:text-white">Политика конфиденциальности</a></li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h3 class="text-sm font-semibold uppercase tracking-wider">Контакты</h3>
+                        <ul class="mt-4 space-y-2">
+                            <li class="text-gray-400">info@reshudz.ru</li>
+                            <li class="text-gray-400">+7 (123) 456-7890</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="mt-8 pt-8 border-t border-gray-700 text-center text-gray-400 text-sm">
+                <p>© 2023 Решу ДЗ. Все права защищены.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+    // Общие элементы
+    const loadingState = document.getElementById('loading-state');
+    const resultSection = document.getElementById('result-section');
+    const resultArea = document.getElementById('result-area');
+    const userInputContent = document.getElementById('user-input-content');
+    const newRequestButton = document.getElementById('new-request');
+    const copyResultButton = document.getElementById('copy-result');
+    
+    // Управление табами
+    const tabs = document.querySelectorAll('[data-tab]');
+    const tabContents = {
+        photo: document.getElementById('photo-content'),
+        text: document.getElementById('text-content')
+    };
+    
+    // Функция для переключения табов
+    function switchTab(tabName) {
+        // Скрываем секцию с результатом при переключении табов
+        resultSection.classList.add('hidden');
+        
+        // Убираем активный класс у всех табов
+        tabs.forEach(t => t.classList.remove('tab-active'));
+        // Добавляем активный класс текущему табу
+        document.querySelector(`[data-tab="${tabName}"]`).classList.add('tab-active');
+        
+        // Скрываем все содержимое табов
+        Object.values(tabContents).forEach(content => content.classList.add('hidden'));
+        // Показываем содержимое текущего таба
+        tabContents[tabName].classList.remove('hidden');
+    }
+    
+    // Обработчики кликов по табам
+    tabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+            switchTab(tab.dataset.tab);
+        });
+    });
+    
+    // Функционал загрузки фото
+    const photoUpload = document.getElementById('photo-upload');
+    const photoUploadButton = document.getElementById('photo-upload-button');
+    const photoPreview = document.getElementById('photo-preview');
+    const previewImage = document.getElementById('preview-image');
+    const removePhoto = document.getElementById('remove-photo');
+    const photoSubmit = document.getElementById('photo-submit');
+    
+    photoUploadButton.addEventListener('click', () => photoUpload.click());
+    
+    photoUpload.addEventListener('change', function() {
+        if (this.files.length > 0) {
+            const file = this.files[0];
+            const reader = new FileReader();
+            
+            reader.onload = function(e) {
+                previewImage.src = e.target.result;
+                photoPreview.classList.remove('hidden');
+                photoSubmit.disabled = false;
+            };
+            
+            reader.readAsDataURL(file);
+        }
+    });
+    
+    removePhoto.addEventListener('click', function() {
+        photoUpload.value = '';
+        photoPreview.classList.add('hidden');
+        photoSubmit.disabled = true;
+    });
+    
+    // Функционал текстового ввода
+    const problemText = document.getElementById('problem-text');
+    const textSubmit = document.getElementById('text-submit');
+    
+    problemText.addEventListener('input', function() {
+        textSubmit.disabled = this.value.trim().length === 0;
+    });
+    
+    // Drag and drop для загрузки фото
+    const fileInputLabel = document.querySelector('.file-input-label');
+    
+    ['dragenter', 'dragover'].forEach(eventName => {
+        fileInputLabel.addEventListener(eventName, (e) => {
+            e.preventDefault();
+            fileInputLabel.classList.add('border-primary-500', 'bg-primary-50');
+        });
+    });
+    
+    ['dragleave', 'drop'].forEach(eventName => {
+        fileInputLabel.addEventListener(eventName, (e) => {
+            e.preventDefault();
+            fileInputLabel.classList.remove('border-primary-500', 'bg-primary-50');
+        });
+    });
+    
+    fileInputLabel.addEventListener('drop', function(e) {
+        const file = e.dataTransfer.files[0];
+        if (file && file.type.startsWith('image/')) {
+            photoUpload.files = e.dataTransfer.files;
+            photoUpload.dispatchEvent(new Event('change'));
+        }
+    });
+    
+    // Обработка отправки форм
+    async function submitForm(url, formData) {
+        try {
+            loadingState.classList.remove('hidden');
+            const response = await fetch(url, { method: 'POST', body: formData });
+            
+            if (!response.ok) throw new Error('Ошибка сервера');
+            return await response.text();
+        } catch (error) {
+            console.error('Ошибка:', error);
+            return 'Произошла ошибка при обработке вашего запроса. Пожалуйста, попробуйте позже.';
+        } finally {
+            loadingState.classList.add('hidden');
+        }
+    }
+    
+    function showUserInput(tab) {
+        if (tab === 'photo' && photoUpload.files.length > 0) {
+            userInputContent.innerHTML = `<img src="${previewImage.src}" class="max-h-64 mx-auto rounded-lg" alt="Ваше изображение">`;
+        } else if (tab === 'text' && problemText.value.trim()) {
+            userInputContent.textContent = problemText.value.trim();
+        }
+    }
+    
+    // Обработчики отправки форм
+    photoSubmit.addEventListener('click', async function() {
+        if (!photoUpload.files.length) return;
+        
+        const formData = new FormData();
+        formData.append('file', photoUpload.files[0]);
+        formData.append('action', document.querySelector('input[name="photo-action"]:checked').value);
+        
+        showUserInput('photo');
+        resultArea.innerHTML = await submitForm('/processing/photo/', formData);
+        resultSection.classList.remove('hidden');
+        tabContents.photo.classList.add('hidden');
+    });
+    
+    textSubmit.addEventListener('click', async function() {
+        const text = problemText.value.trim();
+        if (!text) return;
+        
+        const formData = new FormData();
+        formData.append('text', text);
+        formData.append('action', document.querySelector('input[name="text-action"]:checked').value);
+        
+        showUserInput('text');
+        resultArea.textContent = await submitForm('/processing/text/', formData);
+        resultSection.classList.remove('hidden');
+        tabContents.text.classList.add('hidden');
+    });
+    
+    // Кнопка "Новый запрос"
+    newRequestButton.addEventListener('click', function() {
+        resultSection.classList.add('hidden');
+        const activeTab = document.querySelector('[data-tab].tab-active').dataset.tab;
+        tabContents[activeTab].classList.remove('hidden');
+    });
+    
+    // Кнопка копирования результата
+    copyResultButton.addEventListener('click', function() {
+        navigator.clipboard.writeText(resultArea.textContent).then(() => {
+            const originalText = copyResultButton.textContent;
+            copyResultButton.textContent = 'Скопировано!';
+            setTimeout(() => {
+                copyResultButton.textContent = originalText;
+            }, 2000);
+        }).catch(err => {
+            console.error('Ошибка копирования: ', err);
+        });
+    });
+});
+    </script>
+</body>
+</html>
